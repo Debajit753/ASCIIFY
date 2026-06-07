@@ -135,17 +135,6 @@ python3 -m http.server
 
 ---
 
-## Deploy to GitHub Pages
-
-1. Update `CONFIG.REPO_URL` (and author fields) in `index.html` — do this first.
-2. Create a repo and push these files.
-3. Repo **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`**.
-4. Live at `https://your-username.github.io/asciify/`.
-
-Static files, no CI, no build — that's the whole pipeline.
-
----
-
 ## Browser support
 
 Best on **Chromium** (Chrome / Edge / Brave / Arc). **Firefox** and **Safari** work for common codecs.
