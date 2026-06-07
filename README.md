@@ -19,7 +19,7 @@
 ![Vanilla JS](https://img.shields.io/badge/vanilla-JS-ffb23e)
 ![No build step](https://img.shields.io/badge/build-none-ffb23e)
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/asciify?style=social)](https://github.com/your-username/asciify)
+[![GitHub stars](https://img.shields.io/github/stars/Debajit753/asciify?style=social)](https://github.com/Debajit753/asciify)
 
 </div>
 
@@ -116,22 +116,6 @@ Five luminance ramps, dark → light. More glyphs = more tonal detail.
 
 ---
 
-## Quick start / Setup
-
-There is exactly **one** place to edit. At the very top of `app.js`:
-
-```js
-const CONFIG = {
-  REPO_URL:    "https://github.com/your-username/asciify",
-  AUTHOR_NAME: "your name",
-  AUTHOR_URL:  "https://github.com/your-username"
-};
-```
-
-Replace those placeholders after you create your repo. Every GitHub link on the page — the **GITHUB ↗** nav link and the buttons at the bottom of the **About** page — wires itself up from `CONFIG` automatically. No other edits required.
-
----
-
 ## Run locally
 
 The simplest path: **double-click `index.html`** and it opens over `file://`. Dropping a local file works directly — no server needed.
@@ -212,7 +196,7 @@ Bug reports and feature ideas are welcome in **Issues** — new ramps, new color
 
 ## License
 
-[MIT](LICENSE) © [your name](https://github.com/your-username)
+[MIT](LICENSE) © [Debajit](https://github.com/Debajit753)
 
 ---
 
@@ -222,6 +206,6 @@ Bug reports and feature ideas are welcome in **Issues** — new ramps, new color
 > if ASCIIFY made your terminal smile, leave a ⭐
 ```
 
-**Like it? [Give it a star on GitHub](https://github.com/your-username/asciify) — it's the only thing this app ever uploads.**
+**Like it? [Give it a star on GitHub](https://github.com/Debajit753/asciify) — it's the only thing this app ever uploads.**
 
 </div>
