@@ -2,14 +2,6 @@
    ASCIIFY — app logic (vanilla JS, no dependencies)
    ============================================================ */
 
-/* ══════════════════════════════════════════════════════════════════════
-   ⚙  CONFIG  —  EDIT THIS AFTER YOU CREATE YOUR GITHUB REPO
-   ----------------------------------------------------------------------
-   This is the ONLY place you need to change. Replace the placeholders
-   below with your repository + profile URLs. Every GitHub link on the
-   page (the "GITHUB ↗" nav link and the buttons at the bottom of the
-   About page) is wired from these values automatically.
-   ══════════════════════════════════════════════════════════════════════ */
 const CONFIG = {
   REPO_URL:    "https://github.com/Debajit753/ASCIIFY",   // ← your repository URL
   AUTHOR_NAME: "Debajit",                                  // ← shown in the credit line
