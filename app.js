@@ -11,9 +11,9 @@
    About page) is wired from these values automatically.
    ══════════════════════════════════════════════════════════════════════ */
 const CONFIG = {
-  REPO_URL:    "https://github.com/your-username/asciify",   // ← your repository URL
-  AUTHOR_NAME: "your name",                                  // ← shown in the credit line
-  AUTHOR_URL:  "https://github.com/your-username"            // ← your GitHub profile
+  REPO_URL:    "https://github.com/Debajit753/ASCIIFY",   // ← your repository URL
+  AUTHOR_NAME: "Debajit",                                  // ← shown in the credit line
+  AUTHOR_URL:  "https://github.com/Debajit753"            // ← your GitHub profile
 };
 /* ════════════════════════════════════════════════════════════════════ */
 
