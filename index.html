@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ASCIIFY — video, rendered as living text</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="#home">ASCIIFY<span class="cur">▮</span></a>
+  <nav class="nav">
+    <a href="#home" data-page="home" class="navlink active">DROP</a>
+    <a href="#about" data-page="about" class="navlink">ABOUT</a>
+    <a id="ghNav" class="navlink gh-nav" href="#" target="_blank" rel="noopener">GITHUB ↗</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section id="page-home" class="page">
+
+    <!-- EMPTY / DROP STATE -->
+    <div id="home-empty">
+      <div class="home-empty">
+        <div class="kicker">STEP 01 / 02 — CHOOSE A VIDEO</div>
+        <h1 class="display">Drop a video.<br><em>Watch it become ASCII.</em></h1>
+        <p class="lead">Pick any MP4 or WebM from your device. It plays in your browser as live colored ASCII — nothing uploaded, nothing stored.</p>
+
+        <div id="drop" class="dropzone frame">
+          <span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
+          <div class="drop-inner">
+            <div class="drop-glyph">↓ ↓ ↓</div>
+            <div class="drop-title" id="dropTitle">DRAG VIDEO HERE</div>
+            <div class="drop-sub">or <button id="browseBtn" class="link">click to choose a file</button></div>
+            <div class="drop-hint">MP4 · WEBM · MOV — UP TO 500 MB</div>
+          </div>
+        </div>
+        <div id="err" class="err"></div>
+
+        <div class="url-label">OR LOAD FROM A DIRECT URL</div>
+        <div class="cmdline">
+          <span class="prompt">&gt;</span>
+          <input id="urlInput" type="text" placeholder="https://example.com/video.mp4" />
+          <button id="urlBtn" class="btn">LOAD</button>
+        </div>
+        <div class="url-hint">Direct .mp4 / .webm links only · CORS must be enabled · not YouTube</div>
+
+        <div class="howto">
+          <div class="howto-head">HOW IT WORKS</div>
+          <div class="howto-grid">
+            <div class="howto-step"><span class="n">01</span><span class="t">PICK A VIDEO</span><span class="d">Drag a file in or paste a URL. It stays on your device.</span></div>
+            <div class="howto-step"><span class="n">02</span><span class="t">TUNE THE LOOK</span><span class="d">Adjust density, character set, color mode, and threshold — live.</span></div>
+            <div class="howto-step"><span class="n">03</span><span class="t">EXPORT IT</span><span class="d">Save a frame as PNG, or record the ASCII to a WebM video.</span></div>
+          </div>
+        </div>
+
+        <input type="file" id="file" accept="video/*" hidden />
+      </div>
+    </div>
+
+    <!-- PLAYER STATE -->
+    <div id="home-player" hidden>
+      <!-- hidden video = decoder + audio source (master clock) -->
+      <video id="orig" playsinline preload="auto"></video>
+
+      <div class="player">
+        <div class="viewport frame">
+          <span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
+
+          <div class="stage" id="stage">
+            <div class="canvas-frame" id="canvasFrame">
+              <canvas id="ascii" aria-label="ASCII video output"></canvas>
+            </div>
+
+            <!-- loading overlay -->
+            <div class="cv-overlay" id="loadOverlay" hidden>
+              <div class="spinner"></div>
+              <div class="cv-text">DECODING<span id="decDots">…</span></div>
+            </div>
+
+            <!-- error overlay -->
+            <div class="cv-overlay" id="errOverlay" hidden>
+              <div class="cv-err-ic">!</div>
+              <div class="cv-text" id="errMsg"></div>
+              <button class="btn" id="errRetry">TRY ANOTHER FILE</button>
+            </div>
+          </div>
+
+          <div class="transport">
+            <button id="playBtn" class="t-btn" aria-label="Play / pause">▶</button>
+            <input id="seek" class="scrub" type="range" min="0" max="100" step="0.1" value="0" aria-label="Seek" />
+            <span id="time" class="tc">0:00 / 0:00</span>
+            <span class="vol-ic">VOL</span>
+            <input id="vol" class="vol" type="range" min="0" max="1" step="0.02" value="1" aria-label="Volume" />
+          </div>
+        </div>
+
+        <aside class="rail">
+          <div class="rail-head">PARAMETERS</div>
+
+          <div class="param">
+            <div class="param-label">COLOR MODE</div>
+            <div class="seg" id="colorSeg">
+              <button data-mode="color" class="active">COLOR</button>
+              <button data-mode="mono">MONO</button>
+              <button data-mode="invert">INVERT</button>
+            </div>
+          </div>
+
+          <div class="param">
+            <div class="param-label">RESOLUTION <span class="num"><span id="densVal">80</span> cols</span></div>
+            <input id="density" type="range" min="20" max="200" step="5" value="80" />
+          </div>
+
+          <div class="param">
+            <div class="param-label">THRESHOLD <span class="num"><span id="threshVal">0</span>%</span></div>
+            <input id="threshold" type="range" min="0" max="128" step="1" value="0" />
+          </div>
+
+          <div class="param">
+            <div class="param-label">FONT SIZE <span class="num"><span id="fontVal">1.00</span>×</span></div>
+            <input id="fontFactor" type="range" min="0.5" max="2" step="0.05" value="1" />
+          </div>
+
+          <div class="param">
+            <div class="param-label">CHARACTER SET</div>
+            <select id="charset" class="select">
+              <option value="standard">Standard — .:-=+*#%@</option>
+              <option value="detailed">Detailed — 15 levels</option>
+              <option value="minimal">Minimal — .*#</option>
+              <option value="blocks">Blocks — ░▒▓█</option>
+              <option value="fine">Fine — 68 levels</option>
+              <option value="custom">Custom ramp…</option>
+            </select>
+            <input id="customRamp" class="select custom-ramp" type="text" placeholder="dark → light  (e.g.  .:+#@)" hidden />
+          </div>
+
+          <div class="param">
+            <div class="param-label">VIEW</div>
+            <div class="seg" id="viewSeg">
+              <button data-view="ascii" class="active">ASCII</button>
+              <button data-view="original">ORIGINAL</button>
+            </div>
+          </div>
+
+          <div class="rail-actions">
+            <button id="exportBtn" class="btn btn-primary">⤓ EXPORT FRAME (PNG)</button>
+            <button id="exportVideoBtn" class="btn btn-rec">● EXPORT VIDEO (WEBM)</button>
+            <button id="newBtn" class="btn btn-ghost">↺ NEW VIDEO</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="page-about" class="page" hidden>
+    <div class="about">
+      <div class="sub">02 — ABOUT</div>
+      <h1>It’s a video player that thinks in characters.</h1>
+      <p class="big">ASCIIFY takes any video you give it and redraws every frame out of text — each character chosen by how bright that part of the image is, then painted in the exact color of the pixel underneath it.</p>
+      <p>The result plays like a normal video, with the original soundtrack, except the picture is made entirely of glyphs. It’s part toy, part homage to the amber and green CRT terminals this whole aesthetic comes from.</p>
+
+      <h2>HOW IT WORKS</h2>
+      <div class="diagram">VIDEO ─▶ DOWNSCALE TO GRID ─▶ READ LUMINANCE ─▶ MATCH GLYPH ─▶ TINT W/ PIXEL ─▶ DRAW
+AUDIO ───────────────────────────────────────────────▶ PLAYS NATIVELY  (MASTER CLOCK)</div>
+      <ol class="steps">
+        <li><span class="n">01</span><span class="t"><b>Sample.</b> Each frame is drawn onto a tiny hidden canvas, shrunk to the character grid — that grid size <i>is</i> the resolution.</span></li>
+        <li><span class="n">02</span><span class="t"><b>Measure.</b> For every cell we read its pixel and compute brightness (Rec.709 luminance).</span></li>
+        <li><span class="n">03</span><span class="t"><b>Match.</b> Brightness picks a character from the active ramp — dark → sparse, light → dense.</span></li>
+        <li><span class="n">04</span><span class="t"><b>Tint.</b> The character is drawn in the source pixel’s color (saturation-boosted so dim pixels stay readable) — or green / inverted, depending on mode.</span></li>
+        <li><span class="n">05</span><span class="t"><b>Sync.</b> Audio plays natively and acts as the clock; the visuals chase it and drop frames rather than drift.</span></li>
+      </ol>
+
+      <h2>COLOR MODES</h2>
+      <div class="modes">
+        <div class="mode c"><h3>COLOR</h3><p>Each glyph keeps the true hue of the pixel it replaced, remapped to a brighter, saturation-boosted range so it stays readable.</p></div>
+        <div class="mode m"><h3>MONO</h3><p>Classic phosphor terminal — single green tone on black, brightness only, no source color.</p></div>
+        <div class="mode i"><h3>INVERT</h3><p>A photographic negative: bright areas go sparse, dark areas go dense, lightness flipped.</p></div>
+      </div>
+
+      <h2>PRIVACY</h2>
+      <p><strong>Your video never leaves your device.</strong> There is no server and no upload — the file is read locally with the browser’s own APIs and processed frame-by-frame in the page. Close the tab and it’s gone. That’s the whole point of doing this client-side.</p>
+
+      <h2>THE TECH</h2>
+      <p>A hidden <strong>&lt;video&gt;</strong> decodes the file and supplies the audio. An offscreen <strong>&lt;canvas&gt;</strong> downsamples and reads pixels; a visible canvas draws the glyphs. The loop runs on <strong>requestVideoFrameCallback</strong> (with a <strong>requestAnimationFrame</strong> fallback), keyed to the video’s own frame clock. Export a still as PNG, or record the ASCII playback — with audio — to WebM. No frameworks, no dependencies — just three static files: <strong>index.html</strong>, <strong>styles.css</strong>, <strong>app.js</strong>.</p>
+
+      <h2>SOURCE</h2>
+      <p>ASCIIFY is open source and ships as a few small static files with zero dependencies — clone it, open it, done. If it made you smile, a star is the nicest way to say thanks.</p>
+      <div class="gh-actions">
+        <a class="btn btn-primary" data-repo href="#" target="_blank" rel="noopener">★ STAR ON GITHUB</a>
+        <a class="btn" data-repo href="#" target="_blank" rel="noopener">VIEW REPOSITORY ↗</a>
+        <a class="btn btn-ghost" data-issues href="#" target="_blank" rel="noopener">REPORT AN ISSUE</a>
+      </div>
+      <p class="gh-credit">Built by <a data-author href="#" target="_blank" rel="noopener">your name</a> · MIT licensed · if you like it, drop a ⭐ on GitHub.</p>
+
+      <a class="backlink" href="#home">← back to drop a video</a>
+    </div>
+  </section>
+</main>
+
+<footer class="statusbar">
+  <span class="st-left"><i class="dot" id="stDot"></i><span id="stState">READY</span></span>
+  <span class="st-mid" id="stFile">no file loaded</span>
+  <span class="st-right"><span class="hide-sm"><span id="stMeta">—</span> · </span>LOCAL · NO UPLOAD</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
