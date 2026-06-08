@@ -33,6 +33,7 @@
 ```
 
 ASCIIFY is three small static files — `index.html`, `styles.css`, `app.js`. No frameworks, no dependencies, no build step, no backend. Drop a local video (or paste a direct, CORS-enabled `.mp4` / `.webm` URL) and it re-paints every frame as **colored ASCII**, tinted with the exact source pixel color, while the **original audio plays in perfect sync**.
+[Website](https://debajit753.github.io/ASCIIFY/) 
 
 Two pages, hash-routed: **DROP** (the home / drop zone + player) and **ABOUT**.
 
